@@ -1,4 +1,4 @@
-package cfilt.iitb.ac.in.hindishabdamitra.hindishabdamitra;
+package com.example.bhaum.eduapp;
 
 import android.content.Context;
 

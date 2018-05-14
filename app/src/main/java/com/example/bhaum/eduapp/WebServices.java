@@ -1,4 +1,6 @@
+package com.example.bhaum.eduapp;
 
+import android.util.Log;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -123,26 +125,26 @@ public class WebServices {
                 {
 
                     connection = (HttpURLConnection) new URL(url).openConnection();
-
+                    Log.e("Do","Do");
                 }
                 else
                 {
                     getPrepare();
                     connection = (HttpURLConnection) new URL(url + "?" + query).openConnection();
-
                 }
-                connection.setRequestProperty("Accept-Charset", charset);
+                //connection.setRequestProperty("Accept-Charset", charset);
                 connection.connect();
                 is = connection.getInputStream();
 
-
                 if(connection.getResponseCode()==200)
                 {
+                    Log.d("T","T");
                     bol=true;
                     return true;
                 }
                 else
                 {
+                    Log.e("Ok","OK");
                     return false;
                 }
             }

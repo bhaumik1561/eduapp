@@ -1,4 +1,4 @@
-/**
+package com.example.bhaum.eduapp; /**
  * Created by CFILT on 3/5/2018.
  */
 
@@ -138,8 +138,8 @@ public class WebRequest {
         StringBuilder response = new StringBuilder();
         JSONObject postDataParams = new JSONObject();
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
-        params.put("username", "admin");
-        params.put("password", "cfilt123");
+        params.put("username", "prit123");
+        params.put("password", "Hello123");
         try {
             url = new URL(urladdress);
 
