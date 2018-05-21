@@ -18,4 +18,12 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="feed">feed</string>
+    <string name="attendance">attendance</string>
+    <string name="title_activity_navigation_tab">NavigationTab</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_feed">feed</string>
+    <string name="title_attendance">attendance</string>
 </resources>
