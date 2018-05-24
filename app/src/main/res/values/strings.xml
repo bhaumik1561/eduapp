@@ -3,7 +3,7 @@
 
     <!-- Strings related to login -->
     <!--<string name="url">http://www.cfilt.iitb.ac.in/hindishabdamitra/api/</string>-->
-    <string name="url">http://127.0.0.1:8000/api/</string>
+    <string name="requestUrl">http://192.168.0.103:8000/api/</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password (optional)</string>
     <string name="action_sign_in">Sign in or register</string>
@@ -26,4 +26,5 @@
     <string name="title_notifications">Notifications</string>
     <string name="title_feed">feed</string>
     <string name="title_attendance">attendance</string>
+    <string name="url">http://</string>
 </resources>
