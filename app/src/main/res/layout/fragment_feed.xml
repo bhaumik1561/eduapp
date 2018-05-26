@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    >
+    android:layout_marginBottom="60dp">
 
     <ListView
         android:id="@+id/list"
@@ -13,4 +14,17 @@
         android:divider="@null"
         android:fillViewport="true"/>
 
-</LinearLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/createPost"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="end|bottom"
+        android:layout_marginBottom="13dp"
+        android:layout_marginEnd="28dp"
+        app:srcCompat="@drawable/ic_create_black_24dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="28dp" />
+
+</RelativeLayout>

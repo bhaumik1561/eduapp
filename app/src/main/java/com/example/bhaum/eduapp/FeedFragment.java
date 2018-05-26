@@ -5,8 +5,15 @@ import com.example.bhaum.eduapp.app.AppController;
 import com.example.bhaum.eduapp.volley.LruBitmapCache;
 import com.example.bhaum.eduapp.adapter.FeedListAdapter;
 
+import java.io.BufferedInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -15,11 +22,20 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.Menu;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.android.volley.Cache;
@@ -44,19 +60,26 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FeedFragment extends Fragment  {
+public class FeedFragment extends Fragment {
 
-
+    private ProgressDialog pDialog;
+    public static final int progress_bar_type = 0;
     private static final String TAG = "Nothing";
     private ListView listView;
     private FeedListAdapter listAdapter;
     private List<FeedItem> feedItems;
-    private String URL_FEED = "http://192.168.0.107:8000/api/news/";
+    private String URL_FEED = "http://192.168.0.103:8000/api/news/";
+    private String URL_FILE = "http://192.168.0.103:8000/static/files/";
+    private Context context;
+    public HashMap<Integer, String> map;
+    private String URL_USERS = "http://192.168.0.103:8000/api/users/";
+    FloatingActionButton createPost;
 
     @SuppressLint("NewApi")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
 
         Log.e(TAG, "inside fragment");
         final View view = inflater.inflate(R.layout.fragment_feed, container, false);
@@ -78,11 +101,15 @@ public class FeedFragment extends Fragment  {
         adapter = new MyFeedAdapter(listItems,getContext() );
         recyclerView.setAdapter(adapter);
        */
+        context = view.getContext();
         listView = (ListView) view.findViewById(R.id.list);
+        final Button downloadFileBtn = (Button)view.findViewById(R.id.downloadFile);
         feedItems = new ArrayList<FeedItem>();
 
         listAdapter = new FeedListAdapter(getActivity(), feedItems);
         listView.setAdapter(listAdapter);
+
+        //We first find all users and store into hashmap
 
         // We first check for cached request
         Cache cache = AppController.getInstance().getRequestQueue().getCache();
@@ -124,10 +151,20 @@ public class FeedFragment extends Fragment  {
             AppController.getInstance().addToRequestQueue(jsonReq);
         }
 
-
+        createPost = (FloatingActionButton) view.findViewById(R.id.createPost);
+        createPost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, CreatePost.class);
+                intent.putExtra("USER_ID", 1);
+                startActivity(intent);
+            }
+        });
         return view;
 
     }
+
+
 
     private void parseJsonFeed(JSONObject response) {
         try {
@@ -138,6 +175,7 @@ public class FeedFragment extends Fragment  {
 
                 FeedItem item = new FeedItem();
                 item.setId(feedObj.getInt("news_id"));
+                item.setUser_id(feedObj.getInt("user_id"));
                 //item.setName(feedObj.getString("name"));
 
                 // Image might be null sometimes
@@ -148,7 +186,7 @@ public class FeedFragment extends Fragment  {
                 item.setStatus(feedObj.getString("description"));
                 //item.setProfilePic(feedObj.getString("profilePic"));
                 item.setTimeStamp(feedObj.getString("date"));
-
+                item.setTotalLikes(feedObj.getInt("total_likes"));
                 // url might be null sometimes
                 feedItems.add(item);
             }

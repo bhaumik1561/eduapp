@@ -4,17 +4,18 @@ public class FeedItem {
 
 
     private int id;
+    private int user_id;
     private String name = "PRIT";
     private String status;
     private String ProfilePic;
     private String timeStamp;
     private String attachmentType;
     private String attachement ="https://api.androidhive.info/feed/img/cosmos.jpg";
+    private int totalLikes;
+    private int totalComments = 0;
 
-    public FeedItem() {
-    }
 
-    public FeedItem(int id, String name, String status, String profilePic, String timeStamp, String attachmentType, String attachement) {
+    public FeedItem(int id, String name, String status, String profilePic, String timeStamp, String attachmentType, String attachement, int totalLikes, int user_id) {
         this.id = id;
         this.name = name;
         this.status = status;
@@ -22,6 +23,37 @@ public class FeedItem {
         this.timeStamp = timeStamp;
         this.attachmentType = attachmentType;
         this.attachement = attachement;
+        this.totalLikes = totalLikes;
+        this.user_id = user_id;
+    }
+
+    public int getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
+    }
+
+    public int getTotalComments() {
+        return totalComments;
+    }
+
+    public void setTotalComments(int totalComments) {
+        this.totalComments = totalComments;
+    }
+
+    public void setTotalLikes(int totalLikes) {
+        this.totalLikes = totalLikes;
+    }
+
+    public int getTotalLikes() {
+        return totalLikes;
+    }
+
+
+
+    public FeedItem() {
     }
 
 

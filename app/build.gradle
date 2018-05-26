@@ -14,6 +14,9 @@ allprojects {
         jcenter()
         google()
         maven { url 'https://jitpack.io' }
+        maven {
+            url  "http://dl.bintray.com/lukaville/maven"
+        }
     }
 }
 
@@ -53,4 +56,7 @@ dependencies {
     implementation 'com.android.support:design:27.0.0'
     implementation 'com.android.support:cardview-v7:27.1.1'
     implementation 'de.hdodenhof:circleimageview:2.2.0'
+    implementation 'com.nbsp:library:1.8'
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'net.gotev:uploadservice:2.1'
 }

@@ -92,7 +92,10 @@ public class NavigationTab extends AppCompatActivity /*implements FeedFragment.O
         context = getApplicationContext();
         mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        mOnNavigationItemSelectedListener.onNavigationItemSelected(navigation.getMenu().findItem(R.id.navigation_feed));
+
         /*
         setContentView(R.layout.fragment_feed);
 
