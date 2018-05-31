@@ -1,5 +1,8 @@
 package com.example.bhaum.eduapp.data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class FeedItem {
 
 
@@ -12,7 +15,9 @@ public class FeedItem {
     private String attachmentType;
     private String attachement ="https://api.androidhive.info/feed/img/cosmos.jpg";
     private int totalLikes;
+    private List<Comments> list_comments = new ArrayList<>();
     private int totalComments = 0;
+
 
 
     public FeedItem(int id, String name, String status, String profilePic, String timeStamp, String attachmentType, String attachement, int totalLikes, int user_id) {
@@ -113,4 +118,7 @@ public class FeedItem {
         this.attachement = attachement;
     }
 
+    public void addComment(Comments c) { list_comments.add(c) ; }
+
+    public int totalComments() { return list_comments.size(); }
 }

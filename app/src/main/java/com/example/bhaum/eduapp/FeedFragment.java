@@ -4,6 +4,7 @@ import com.example.bhaum.eduapp.data.FeedItem;
 import com.example.bhaum.eduapp.app.AppController;
 import com.example.bhaum.eduapp.volley.LruBitmapCache;
 import com.example.bhaum.eduapp.adapter.FeedListAdapter;
+import com.example.bhaum.eduapp.data.Comments;
 
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
@@ -19,6 +20,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -83,24 +85,7 @@ public class FeedFragment extends Fragment {
 
         Log.e(TAG, "inside fragment");
         final View view = inflater.inflate(R.layout.fragment_feed, container, false);
-       /* final FragmentActivity c = getActivity();
-        final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(c);
-        recyclerView.setLayoutManager(layoutManager);
 
-        listItems = new ArrayList<>();
-
-        for(int i=0; i<=10; i++)
-        {
-            Feed listItem = new Feed(
-                    "prit","ppsp"
-            );
-        listItems.add(listItem);
-        }
-
-        adapter = new MyFeedAdapter(listItems,getContext() );
-        recyclerView.setAdapter(adapter);
-       */
         context = view.getContext();
         listView = (ListView) view.findViewById(R.id.list);
         final Button downloadFileBtn = (Button)view.findViewById(R.id.downloadFile);
@@ -112,7 +97,7 @@ public class FeedFragment extends Fragment {
         //We first find all users and store into hashmap
 
         // We first check for cached request
-        Cache cache = AppController.getInstance().getRequestQueue().getCache();
+    /*    Cache cache = AppController.getInstance().getRequestQueue().getCache();
         Entry entry = cache.get(URL_FEED);
         if (entry != null) {
             // fetch the data from cache
@@ -128,6 +113,7 @@ public class FeedFragment extends Fragment {
             }
 
         } else {
+        */
             // making fresh volley request and getting json
             JsonObjectRequest jsonReq = new JsonObjectRequest(Method.GET,
                     URL_FEED, null, new Response.Listener<JSONObject>() {
@@ -149,14 +135,14 @@ public class FeedFragment extends Fragment {
 
             // Adding request to volley request queue
             AppController.getInstance().addToRequestQueue(jsonReq);
-        }
+        //}
 
         createPost = (FloatingActionButton) view.findViewById(R.id.createPost);
         createPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, CreatePost.class);
-                intent.putExtra("USER_ID", 1);
+                intent.putExtra("USER_ID", "1");
                 startActivity(intent);
             }
         });
@@ -188,6 +174,22 @@ public class FeedFragment extends Fragment {
                 item.setTimeStamp(feedObj.getString("date"));
                 item.setTotalLikes(feedObj.getInt("total_likes"));
                 // url might be null sometimes
+
+                //add comments to the feed object
+                JSONArray commentsArray = feedObj.getJSONArray("comments");
+                for(int j = 0; j< commentsArray.length(); j++){
+                    JSONObject commentObj = (JSONObject) commentsArray.get(j);
+
+                    Comments c = new Comments();
+                    c.setComment_id(commentObj.getInt("comment_id"));
+                    c.setNews_id(feedObj.getInt("news_id"));
+                    c.setNews_id(feedObj.getInt("user_id"));
+                    c.setDescription(commentObj.getString("description"));
+                    c.setTimestamp(commentObj.getString("date"));
+
+                    item.addComment(c);
+                }
+                Log.e(TAG, "Prit" + item.toString());
                 feedItems.add(item);
             }
 

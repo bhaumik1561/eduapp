@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -23,18 +23,31 @@
 
     <Button
         android:id="@+id/chooseFileBtn"
+        android:layout_below="@+id/description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:textAppearanceMedium"
         android:text="Choose File"
         android:layout_margin="10dp"/>
 
+
     <Button
         android:id="@+id/postBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/chooseFileBtn"
         android:layout_margin="10dp"
         android:textAppearance="?android:textAppearanceMedium"
         android:text="POST"
         android:background="@color/colorPrimary"/>
-</LinearLayout>
+
+   <!-- <ProgressBar
+        android:id="@+id/prg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+    -->
+        />
+
+
+</RelativeLayout>

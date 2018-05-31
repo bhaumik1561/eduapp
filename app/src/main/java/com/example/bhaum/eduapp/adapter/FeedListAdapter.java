@@ -160,6 +160,12 @@ public class FeedListAdapter extends BaseAdapter {
                         }
                     });
         }
+        else if(attachementType.equals(""))
+        {
+            feedImageView.setVisibility(View.GONE);
+            downloadFileBtn.setVisibility(View.GONE);
+        }
+
         else
         {
             feedImageView.setVisibility(View.GONE);
