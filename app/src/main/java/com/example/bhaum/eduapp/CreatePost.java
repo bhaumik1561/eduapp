@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
@@ -50,10 +51,10 @@ public class CreatePost extends AppCompatActivity {
     int REQUEST_CODE = 1234;
     EditText description;
     Button chooseFile, Post;
-    String user_id;
+    String SELF_USER_ID = SomeClass.Login_user_id;
     private Uri uri;
     private Service uploadService;
-    String UPLOAD_URL = "http:192.168.0.103:8000/api/news/";
+    String UPLOAD_URL = "http:192.168.2.5:8000/api/news/";
     //ProgressDialog progress;
     ProgressBar progressBar;
 
@@ -65,8 +66,8 @@ public class CreatePost extends AppCompatActivity {
         chooseFile = (Button)findViewById(R.id.chooseFileBtn);
         Post = (Button)findViewById(R.id.postBtn);
         description = (EditText)findViewById(R.id.description);
-        user_id = getIntent().getStringExtra("USER_ID");
-        Log.d(TAG, "USER ID: " + user_id);
+        //user_id = getIntent().getStringExtra("USER_ID");
+        //Log.d(TAG, "USER ID: " + user_id);
         //progressBar = (ProgressBar)findViewById(R.id.prg);
         //get the storage permission
         getStoragePermission();
@@ -122,12 +123,14 @@ public class CreatePost extends AppCompatActivity {
         Call<ResponseBody> fileUpload = null;
         if(uri!=null && !descriptionText.isEmpty()) {
             String filePath = getRealPathFromURIPath(uri, CreatePost.this);
+            //String qid=getFileName(uri);
+            //File file = new File(qid);
             File file = new File(filePath);
-            Log.d(TAG, "filePath=" + filePath);
+            Log.d(TAG, "filePath=" + uri);
             RequestBody mFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
             MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("myfile", file.getName(), mFile);
             RequestBody descrp = RequestBody.create(MediaType.parse("text/plain"), description.getText().toString());
-            RequestBody usr_id = RequestBody.create(MediaType.parse("text/plain"), user_id);
+            RequestBody usr_id = RequestBody.create(MediaType.parse("text/plain"), SELF_USER_ID);
 
             fileUpload = uploadService.createPost(usr_id, descrp, fileToUpload);
 
@@ -135,19 +138,21 @@ public class CreatePost extends AppCompatActivity {
         else if (uri == null  && !descriptionText.isEmpty()) {
 
             RequestBody descrp = RequestBody.create(MediaType.parse("text/plain"), descriptionText);
-            RequestBody usr_id = RequestBody.create(MediaType.parse("text/plain"), user_id);
+            RequestBody usr_id = RequestBody.create(MediaType.parse("text/plain"), SELF_USER_ID);
 
             fileUpload = uploadService.createPost(usr_id, descrp, null);
 
         }
         else if (uri!=null && descriptionText.isEmpty())
         {
+            //String qid=getFileName(uri);
             String filePath = getRealPathFromURIPath(uri, CreatePost.this);
-            File file = new File(filePath);
+            //File file = new File(qid);
+            File file =  new File(filePath);
             Log.d(TAG, "filePath=" + filePath);
             RequestBody mFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
             MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("myfile", file.getName(), mFile);
-            RequestBody usr_id = RequestBody.create(MediaType.parse("text/plain"), user_id);
+            RequestBody usr_id = RequestBody.create(MediaType.parse("text/plain"), SELF_USER_ID);
 
 
             fileUpload = uploadService.createPost(usr_id, null, fileToUpload);
@@ -189,6 +194,7 @@ public class CreatePost extends AppCompatActivity {
         }
     }
 
+
     private String getRealPathFromURIPath(Uri contentURI, Activity activity) {
         Cursor cursor = activity.getContentResolver().query(contentURI, null, null, null, null);
         if (cursor == null) {
@@ -198,6 +204,29 @@ public class CreatePost extends AppCompatActivity {
             int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
             return cursor.getString(idx);
         }
+    }
+
+
+    public String getFileName(Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
     }
 
 

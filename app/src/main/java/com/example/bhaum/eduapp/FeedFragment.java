@@ -15,6 +15,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -58,23 +59,29 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static android.app.Activity.RESULT_OK;
 
 public class FeedFragment extends Fragment {
 
+    //String BASE_URL = getResources().getString(R.string.baseUrl);
     private ProgressDialog pDialog;
     public static final int progress_bar_type = 0;
     private static final String TAG = "Nothing";
     private ListView listView;
     private FeedListAdapter listAdapter;
     private List<FeedItem> feedItems;
-    private String URL_FEED = "http://192.168.0.103:8000/api/news/";
-    private String URL_FILE = "http://192.168.0.103:8000/static/files/";
+    private String URL_FEED = "http://192.168.2.5:8000/api/news/";
+    private String URL_FILE = "http://192.168.2.5:8000/static/files/";
     private Context context;
     public HashMap<Integer, String> map;
-    private String URL_USERS = "http://192.168.0.103:8000/api/users/";
+    private String URL_USERS = "http://192.168.2.5:8000/api/users/";
     FloatingActionButton createPost;
 
     @SuppressLint("NewApi")
@@ -120,7 +127,7 @@ public class FeedFragment extends Fragment {
 
                 @Override
                 public void onResponse(JSONObject response) {
-                    VolleyLog.d(TAG, "Response: " + response.toString());
+                    //VolleyLog.d(TAG, "Response: " + response.toString());
                     if (response != null) {
                         parseJsonFeed(response);
                     }
@@ -142,14 +149,13 @@ public class FeedFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, CreatePost.class);
-                intent.putExtra("USER_ID", "1");
+                //intent.putExtra("USER_ID", "1");
                 startActivity(intent);
             }
         });
         return view;
 
     }
-
 
 
     private void parseJsonFeed(JSONObject response) {
@@ -162,7 +168,8 @@ public class FeedFragment extends Fragment {
                 FeedItem item = new FeedItem();
                 item.setId(feedObj.getInt("news_id"));
                 item.setUser_id(feedObj.getInt("user_id"));
-                //item.setName(feedObj.getString("name"));
+                item.setName(SomeClass.users.get(feedObj.getInt("user_id")));
+
 
                 // Image might be null sometimes
                 String image = feedObj.isNull("file_name") ? null : feedObj
@@ -170,27 +177,51 @@ public class FeedFragment extends Fragment {
                 item.setAttachement(image);
                 item.setAttachmentType(feedObj.getString("file_type"));
                 item.setStatus(feedObj.getString("description"));
-                //item.setProfilePic(feedObj.getString("profilePic"));
+                item.setProfilePic(feedObj.getString("n_profile_pic"));
                 item.setTimeStamp(feedObj.getString("date"));
-                item.setTotalLikes(feedObj.getInt("total_likes"));
-                // url might be null sometimes
+                //item.setTotalLikes(feedObj.getInt("total_likes"));
+
+
+                //set liked by
+                JSONArray likedByArray = feedObj.getJSONArray("liked_by");
+                for(int k = 0; k < likedByArray.length(); k++){
+                    JSONObject likebyObj = (JSONObject) likedByArray.get(k);
+
+                    for (Iterator<String> it = likebyObj.keys(); it.hasNext(); ) {
+                        String key = it.next();
+                        item.addLiked_by(Integer.parseInt(key), (String) likebyObj.get(key));
+                    }
+                }
+
 
                 //add comments to the feed object
                 JSONArray commentsArray = feedObj.getJSONArray("comments");
-                for(int j = 0; j< commentsArray.length(); j++){
-                    JSONObject commentObj = (JSONObject) commentsArray.get(j);
+                if(commentsArray!=null) {
+                    for (int j = 0; j < commentsArray.length(); j++) {
+                        JSONObject commentObj = (JSONObject) commentsArray.get(j);
 
-                    Comments c = new Comments();
-                    c.setComment_id(commentObj.getInt("comment_id"));
-                    c.setNews_id(feedObj.getInt("news_id"));
-                    c.setNews_id(feedObj.getInt("user_id"));
-                    c.setDescription(commentObj.getString("description"));
-                    c.setTimestamp(commentObj.getString("date"));
+                        Comments c = new Comments();
+                        c.setComment_id(commentObj.getInt("comment_id"));
+                        c.setNews_id(feedObj.getInt("news_id"));
+                        c.setUser_id(feedObj.getInt("user_id"));
+                        c.setDescription(commentObj.getString("description"));
+                        c.setTimestamp(commentObj.getString("date"));
 
-                    item.addComment(c);
+                        c.setC_profile_pic(commentObj.getString("c_profile_pic"));
+
+                        //set the name who hase commented
+                        Pattern p = Pattern.compile("\"([^\"]*)\"");
+                        Matcher m = p.matcher(commentObj.getString("commented_by").split(":")[1]);
+                        while (m.find()) {
+                            c.setCommented_by(m.group(1));
+                        }
+
+                        item.addComment(c);
+
+                    }
                 }
-                Log.e(TAG, "Prit" + item.toString());
                 feedItems.add(item);
+
             }
 
             // notify data changes to list adapater
@@ -198,8 +229,20 @@ public class FeedFragment extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+
     }
 
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.e(TAG, "inside onActivity Result");
+        super.onActivityResult(requestCode, resultCode, data);
+            if(resultCode == 1){
+                FeedItem item = (FeedItem) data.getSerializableExtra("MyData");
+                Log.e(TAG," onActivityResult" +String.valueOf(item.getId()));
+            }
+
+    }
 }
 

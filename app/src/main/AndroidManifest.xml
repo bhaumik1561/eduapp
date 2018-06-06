@@ -20,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".NavigationTab"
+            android:name=".Login"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,9 +28,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Login" />
-        <activity android:name=".CreatePost"
-            android:label="Create Post "></activity>
+        <activity android:name=".NavigationTab" />
+        <activity
+            android:name=".CreatePost"
+            android:label="Create Post " />
+        <activity android:name=".CommentActivity"></activity>
     </application>
 
 </manifest>

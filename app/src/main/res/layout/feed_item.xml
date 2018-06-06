@@ -72,14 +72,19 @@
             android:paddingRight="@dimen/feed_item_status_pad_left_right"
             android:textColorLink="@color/link" />
 
-        <com.example.bhaum.eduapp.FeedImageView
+ <!--       <com.example.bhaum.eduapp.FeedImageView
             android:id="@+id/feedImage1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:scaleType="fitXY"
             android:visibility="visible" />
-
+-->
+        <ImageView
+            android:id="@+id/feedImage1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
         <Button
             android:id="@+id/downloadFile"
             android:layout_width="match_parent"

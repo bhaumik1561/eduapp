@@ -28,6 +28,7 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -87,9 +88,56 @@ public class NavigationTab extends AppCompatActivity {
         mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
 
+        findAllUsers();
+
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         mOnNavigationItemSelectedListener.onNavigationItemSelected(navigation.getMenu().findItem(R.id.navigation_feed));
 
         }
+
+    private void findAllUsers() {
+
+
+        final String USERS_URL = "http://192.168.2.5:8000/api/users/";
+
+        // prepare the Request
+        JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, USERS_URL, null,
+                new Response.Listener<JSONObject>()
+                {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // display response
+
+
+                        try {
+                            JSONArray usersArray = response.getJSONArray("users");
+
+                            for(int i = 0; i< usersArray.length() ; i++){
+
+                                JSONObject user = (JSONObject) usersArray.get(i);
+                                SomeClass.users.put(user.getInt("id"), user.getString("first_name") +" " + user.getString("last_name") ) ;
+                                Log.e(TAG, "putted");
+                            }
+
+                            //Log.e(TAG, String.valueOf(Arrays.asList(SomeClass.users)));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Log.e(TAG, "error "+ e.toString());
+                        }
+
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("Error.Response", error.toString());
+                    }
+                }
+        );
+
+// add it to the RequestQueue
+        AppController.getInstance().addToRequestQueue(getRequest);
+    }
 
 }
