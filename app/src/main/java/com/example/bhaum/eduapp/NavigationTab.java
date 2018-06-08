@@ -98,7 +98,7 @@ public class NavigationTab extends AppCompatActivity {
     private void findAllUsers() {
 
 
-        final String USERS_URL = "http://192.168.2.5:8000/api/users/";
+        final String USERS_URL = "http://192.168.0.103:8000/api/users/";
 
         // prepare the Request
         JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, USERS_URL, null,

@@ -77,11 +77,11 @@ public class FeedFragment extends Fragment {
     private ListView listView;
     private FeedListAdapter listAdapter;
     private List<FeedItem> feedItems;
-    private String URL_FEED = "http://192.168.2.5:8000/api/news/";
-    private String URL_FILE = "http://192.168.2.5:8000/static/files/";
+    private String URL_FEED = "http://192.168.0.103:8000/api/news/";
+    private String URL_FILE = "http://192.168.0.103:8000/static/files/";
     private Context context;
     public HashMap<Integer, String> map;
-    private String URL_USERS = "http://192.168.2.5:8000/api/users/";
+    private String URL_USERS = "http://192.168.0.103:8000/api/users/";
     FloatingActionButton createPost;
 
     @SuppressLint("NewApi")

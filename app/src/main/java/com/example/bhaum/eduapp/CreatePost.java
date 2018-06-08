@@ -28,6 +28,9 @@ import com.nbsp.materialfilepicker.ui.FilePickerActivity;
 import net.gotev.uploadservice.MultipartUploadRequest;
 import net.gotev.uploadservice.UploadNotificationConfig;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
@@ -51,10 +54,10 @@ public class CreatePost extends AppCompatActivity {
     int REQUEST_CODE = 1234;
     EditText description;
     Button chooseFile, Post;
-    String SELF_USER_ID = SomeClass.Login_user_id;
+    int SELF_USER_ID = SomeClass.Login_user_id;
     private Uri uri;
     private Service uploadService;
-    String UPLOAD_URL = "http:192.168.2.5:8000/api/news/";
+    String UPLOAD_URL = "http:192.168.0.103:8000/api/news/";
     //ProgressDialog progress;
     ProgressBar progressBar;
 
@@ -130,7 +133,7 @@ public class CreatePost extends AppCompatActivity {
             RequestBody mFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
             MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("myfile", file.getName(), mFile);
             RequestBody descrp = RequestBody.create(MediaType.parse("text/plain"), description.getText().toString());
-            RequestBody usr_id = RequestBody.create(MediaType.parse("text/plain"), SELF_USER_ID);
+            RequestBody usr_id = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(SELF_USER_ID));
 
             fileUpload = uploadService.createPost(usr_id, descrp, fileToUpload);
 
@@ -138,7 +141,7 @@ public class CreatePost extends AppCompatActivity {
         else if (uri == null  && !descriptionText.isEmpty()) {
 
             RequestBody descrp = RequestBody.create(MediaType.parse("text/plain"), descriptionText);
-            RequestBody usr_id = RequestBody.create(MediaType.parse("text/plain"), SELF_USER_ID);
+            RequestBody usr_id = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(SELF_USER_ID));
 
             fileUpload = uploadService.createPost(usr_id, descrp, null);
 
@@ -152,7 +155,7 @@ public class CreatePost extends AppCompatActivity {
             Log.d(TAG, "filePath=" + filePath);
             RequestBody mFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
             MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("myfile", file.getName(), mFile);
-            RequestBody usr_id = RequestBody.create(MediaType.parse("text/plain"), SELF_USER_ID);
+            RequestBody usr_id = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(SELF_USER_ID));
 
 
             fileUpload = uploadService.createPost(usr_id, null, fileToUpload);
@@ -166,7 +169,23 @@ public class CreatePost extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
                     //progressBar.setVisibility(View.GONE);
-                    Toast.makeText(CreatePost.this, "Posted", Toast.LENGTH_LONG).show();
+                    if(response.isSuccessful()){
+                        Toast.makeText(CreatePost.this, "Posted", Toast.LENGTH_LONG).show();
+                    }
+                    else{
+                        try {
+                            //Log.e(TAG,"user id" + String.valueOf(SomeClass.Login_user_id));
+                            //Log.e(TAG, response.errorBody().string());
+                            JSONObject errorMsg = new JSONObject(response.errorBody().string());
+                            //Log.e(TAG, errorMsg.getString("error"));
+                            Toast.makeText(getApplicationContext(), errorMsg.getString("error"), Toast.LENGTH_SHORT).show();
+                        } catch (JSONException e) {
+                            Log.e(TAG, "error" + e.toString());
+                        } catch (IOException e) {
+                            Log.e(TAG, "error" + e.toString());
+                        }
+                    }
+
                     Intent back = new Intent(CreatePost.this, NavigationTab.class);
                     startActivity(back);
 

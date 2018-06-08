@@ -108,7 +108,7 @@ public class Login extends AppCompatActivity {
 
         //wb1.addParam(e1,"Username");
         //wb1.addParam(e2, "Password");
-        String url = "http://192.168.2.5:8000/api/user/login/";
+        String url = "http://192.168.0.103:8000/api/user/login/";
 
 
         StringRequest postRequest = new StringRequest(Request.Method.POST, url,
@@ -123,8 +123,8 @@ public class Login extends AppCompatActivity {
                             JSONObject responseObj = new JSONObject(response);
                             Toast.makeText(getApplicationContext(), "logged in", Toast.LENGTH_LONG).show();
                             addDatatoTable(String.valueOf(responseObj.getString("id")), e1, e2);
-                            SomeClass.Login_user_id = responseObj.getString("id");
-                            //Log.e(TAG, "yeey" +SomeClass.Login_user_id);
+                            SomeClass.Login_user_id = responseObj.getInt("id");
+                            Log.e(TAG, "yeey" +SomeClass.Login_user_id);
                         } catch (JSONException e) {
                             Log.e(TAG, "Error login" + e.toString());
                             e.printStackTrace();
@@ -218,6 +218,8 @@ public class Login extends AppCompatActivity {
             if (!uname.equals("")) {
 
                 Intent i = new Intent(getApplicationContext(), NavigationTab.class);
+                SomeClass.Login_user_id = Integer.parseInt(uid);
+               // Log.e(TAG, String.valueOf(SomeClass.Login_user_id));
                 Toast.makeText(getApplicationContext(), "Logging in", Toast.LENGTH_LONG).show();
                 startActivity(i);
                 finish();

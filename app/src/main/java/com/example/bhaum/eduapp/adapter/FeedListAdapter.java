@@ -57,12 +57,12 @@ import com.android.volley.toolbox.NetworkImageView;
 import static com.example.bhaum.eduapp.app.AppController.TAG;
 
 public class FeedListAdapter extends BaseAdapter {
-    private int SELF_USER_ID = Integer.parseInt(SomeClass.Login_user_id);
+    private int SELF_USER_ID = SomeClass.Login_user_id;
     private Activity activity;
     private LayoutInflater inflater;
     private List<FeedItem> feedItems;
     ImageLoader imageLoader = AppController.getInstance().getImageLoader();
-    private String URL_FILE = "http://192.168.2.5:8000/static/files/";
+    private String URL_FILE = "http://192.168.0.103:8000/static/files/";
     private String filename;
     public FeedListAdapter(Activity activity, List<FeedItem> feedItems) {
         this.activity = activity;
@@ -128,7 +128,7 @@ public class FeedListAdapter extends BaseAdapter {
 
 
         // user profile pic
-        String Profile_Pic_URL = "http://192.168.2.5:8000/static/files/profile_pics/" + item.getProfilePic();
+        String Profile_Pic_URL = "http://192.168.0.103:8000/static/files/profile_pics/" + item.getProfilePic();
         profilePic.setImageUrl(Profile_Pic_URL, imageLoader);
         //profilePic.setDefaultImageResId(R.drawable.ic_account_circle_black_24dp);
 
@@ -165,7 +165,7 @@ public class FeedListAdapter extends BaseAdapter {
         totalComments.setText(item.getTotalComments() +" comments");
 
         // Feed image
-        String url = "http://192.168.2.5:8000/static/files/feed_docs/"+ item.getAttachement();
+        String url = "http://192.168.0.103:8000/static/files/feed_docs/"+ item.getAttachement();
         String attachementType = item.getAttachmentType();
 
         if(attachementType.toLowerCase().equals("jpg") || attachementType.toLowerCase().equals("jpeg") || attachementType.toLowerCase().equals("png") || attachementType.toLowerCase().equals("bmp"))
@@ -275,7 +275,7 @@ public class FeedListAdapter extends BaseAdapter {
                     item.addLiked_by(SELF_USER_ID, SomeClass.users.get(SELF_USER_ID));
                     //Log.d(TAG, String.valueOf(item.getLiked_by()));
                     // send request to add like
-                    String URL_ADDLIKE = "http://192.168.2.5:8000/api/news/likes/create/";
+                    String URL_ADDLIKE = "http://192.168.0.103:8000/api/news/likes/create/";
                     StringRequest postRequest = new StringRequest(Request.Method.POST, URL_ADDLIKE,
                             new Response.Listener<String>() {
                                 @Override
@@ -307,7 +307,7 @@ public class FeedListAdapter extends BaseAdapter {
                     likeButton.setBackgroundResource(android.R.drawable.btn_default);
                     item.removeLiked_by(SELF_USER_ID);
 
-                    String URL_REMOVELIKE = "http://192.168.2.5:8000/api/news/likes/remove/";
+                    String URL_REMOVELIKE = "http://192.168.0.103:8000/api/news/likes/remove/";
                     StringRequest postRequest = new StringRequest(Request.Method.POST, URL_REMOVELIKE,
                             new Response.Listener<String>() {
                                 @Override
