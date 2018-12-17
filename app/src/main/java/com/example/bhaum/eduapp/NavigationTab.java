@@ -2,6 +2,7 @@ package com.example.bhaum.eduapp;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -47,8 +48,10 @@ public class NavigationTab extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_feed:
-                    android.support.v4.app.FragmentManager ff=getSupportFragmentManager();
-                   ff.beginTransaction().replace(R.id.myframe, new FeedFragment()).commit();
+                    android.support.v4.app.FragmentTransaction ft=getSupportFragmentManager().beginTransaction();
+                   ft.replace(R.id.myframe, new FeedFragment())
+                    .addToBackStack(null)
+                    .commit();
 
                 return true;
 
@@ -140,4 +143,16 @@ public class NavigationTab extends AppCompatActivity {
         AppController.getInstance().addToRequestQueue(getRequest);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if(requestCode==1){
+            Log.e(TAG, "back from comment activity");
+        }
+        else {
+            Log.e(TAG, "error in fetching");
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 }

@@ -2,27 +2,18 @@ package com.example.bhaum.eduapp.adapter;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.bumptech.glide.Glide;
+import com.esafirm.rxdownloader.RxDownloader;
 import com.example.bhaum.eduapp.CommentActivity;
-import com.example.bhaum.eduapp.FeedImageView;
 import com.example.bhaum.eduapp.SomeClass;
-import com.example.bhaum.eduapp.volley.LruBitmapCache;
 import com.example.bhaum.eduapp.app.AppController;
 import com.example.bhaum.eduapp.data.FeedItem;
 import com.example.bhaum.eduapp.R;
 
-import java.io.BufferedInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.net.URL;
-import java.net.URLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -30,33 +21,42 @@ import java.util.Map;
 import java.util.Set;
 
 import android.app.Activity;
+import android.app.DownloadManager;
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Environment;
-import android.text.Html;
+import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
-import android.text.format.DateUtils;
-import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.accessibility.AccessibilityManager;
+import android.webkit.MimeTypeMap;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 
+import rx.Observer;
+
 import static com.example.bhaum.eduapp.app.AppController.TAG;
 
 public class FeedListAdapter extends BaseAdapter {
+
+    private DownloadManager downloadManager;
+    private long refid;
+    private Uri Download_Uri;
+    ArrayList<Long> list = new ArrayList<>();
+
+
     private int SELF_USER_ID = SomeClass.Login_user_id;
     private Activity activity;
     private LayoutInflater inflater;
@@ -86,6 +86,7 @@ public class FeedListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
 
         if (inflater == null)
             inflater = (LayoutInflater) activity
@@ -192,20 +193,35 @@ public class FeedListAdapter extends BaseAdapter {
         downloadFileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //code for checking sd card but in emulator it is not available
-               /* if (!isExternalStorageAvailable() || isExternalStorageReadOnly()) {
-                    Log.d(TAG, "available");
-                }
-                else
-                {
-                    Log.d(TAG, "not available");
-                }
 
-                */
-                //String str = (String) downloadFileBtn.getText();
-                //filename = str.substring(str.indexOf(" ")+1);
-                //URL_FILE += filename;
-                //new DownloadFileFromURL().execute(URL_FILE);
+                final String url = URL_FILE + "feed_docs/" + item.getAttachement();
+
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        RxDownloader.getInstance(activity)
+                                .download(url, Environment.getDataDirectory() + "/eduapp/" + item.getAttachement(), getMimeType(url))
+                                .subscribe(new Observer<String>() {
+                                    @Override
+                                    public void onCompleted() {
+                                        Log.d(TAG, "completed");
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        Log.e(TAG,"error" + e.toString());
+                                    }
+
+                                    @Override
+                                    public void onNext(String s) {
+
+                                    }
+                                });
+                    }
+                });
+
+                thread.start();
+
             }
         });
 
@@ -337,102 +353,13 @@ public class FeedListAdapter extends BaseAdapter {
         return convertView;
     }
 
-    class DownloadFileFromURL extends AsyncTask<String, String, String> {
 
-        /**
-         * Before starting background thread Show Progress Bar Dialog
-         * */
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            //showDialog(progress_bar_type);
+    public static String getMimeType(String url) {
+        String type = null;
+        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+        if (extension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
         }
-
-        /**
-         * Downloading file in background thread
-         * */
-        @Override
-        protected String doInBackground(String... f_url) {
-            int count;
-            try {
-                URL url = new URL(f_url[0]);
-                URLConnection conection = url.openConnection();
-                conection.connect();
-
-                // this will be useful so that you can show a tipical 0-100%
-                // progress bar
-                int lenghtOfFile = conection.getContentLength();
-
-                // download the file
-                InputStream input = new BufferedInputStream(url.openStream(),
-                        8192);
-
-                // Output stream
-                OutputStream output = new FileOutputStream(Environment
-                        .getDataDirectory().toString()
-                        + "/" + filename);
-
-                byte data[] = new byte[1024];
-
-                long total = 0;
-
-                while ((count = input.read(data)) != -1) {
-                    total += count;
-                    // publishing the progress....
-                    // After this onProgressUpdate will be called
-                    publishProgress("" + (int) ((total * 100) / lenghtOfFile));
-
-                    // writing data to file
-                    output.write(data, 0, count);
-                }
-
-                // flushing output
-                output.flush();
-
-                // closing streams
-                output.close();
-                input.close();
-
-            } catch (Exception e) {
-                Log.e("Error: ", e.getMessage());
-            }
-
-            return null;
-        }
-
-        /**
-         * Updating progress bar
-         * */
-        protected void onProgressUpdate(String... progress) {
-            // setting progress percentage
-            //pDialog.setProgress(Integer.parseInt(progress[0]));
-        }
-
-        /**
-         * After completing background task Dismiss the progress dialog
-         * **/
-        @Override
-        protected void onPostExecute(String file_url) {
-            // dismiss the dialog after the file was downloaded
-            //dismissDialog(progress_bar_type);
-
-        }
-    }
-
-    //checking for external storage available
-    private static boolean isExternalStorageReadOnly() {
-        String extStorageState = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(extStorageState)) {
-            return true;
-        }
-        return false;
-    }
-
-    private static boolean isExternalStorageAvailable() {
-        String extStorageState = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(extStorageState)) {
-            return true;
-        }
-        return false;
+        return type;
     }
 }

@@ -27,6 +27,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -70,6 +71,9 @@ import static android.app.Activity.RESULT_OK;
 
 public class FeedFragment extends Fragment {
 
+
+
+
     //String BASE_URL = getResources().getString(R.string.baseUrl);
     private ProgressDialog pDialog;
     public static final int progress_bar_type = 0;
@@ -83,6 +87,7 @@ public class FeedFragment extends Fragment {
     public HashMap<Integer, String> map;
     private String URL_USERS = "http://192.168.0.103:8000/api/users/";
     FloatingActionButton createPost;
+    private DownloadManager downloadManager;
 
     @SuppressLint("NewApi")
     @Nullable
